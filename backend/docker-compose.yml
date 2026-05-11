@@ -1,0 +1,144 @@
+version: '3.9'
+
+# NEXA WORKSPACE - DOCKER COMPOSE
+# Infraestrutura Local de Desenvolvimento
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: nexa_postgres
+    restart: unless-stopped
+
+    environment:
+      # Credenciais do superusuário
+      POSTGRES_USER: ${POSTGRES_USER:#}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:#}
+      POSTGRES_DB: ${POSTGRES_DB:#}
+
+      # Configurações de performance
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=pt_BR.UTF-8"
+
+      # Timezone
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+
+    ports:
+      - "${POSTGRES_PORT:-####}:####"
+
+    volumes:
+      # Dados persistentes
+      - postgres_data:/var/lib/postgresql/data
+
+      # Scripts de inicialização
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+
+      # Configurações customizadas PostgreSQL
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+
+    networks:
+      - nexa_network
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -u ${POSTGRES_USER:#} -d ${POSTGRES_DB:#}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # Logs estruturados
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # PgAdmin 4 (GUI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: nexa_pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:#}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:#}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+
+    ports:
+      - "${PGADMIN_port:#}:#"
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      # Configuração pré-definida de servidores
+      - ./docker/postgres/pgadmin-servers.json:/pgadmin4/servers.json
+
+    networks:
+      - nexa_network
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    
+  # Redis (Cache/Sessions)
+  redis:
+    image: redis:7-alpine
+    container_name: nexa_redis
+    restart: unless-stopped
+    
+    command: redis-server --requirepass ${REDIS_PASSWORD:-#} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    
+    ports:
+      - "${REDIS_PORT:#}:#"
+    
+    volumes:
+      - redis_data:/data
+    
+    networks:
+      - nexa_network
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+# ===================
+# Volumes (Persistência)
+# ===================
+volumes:
+  postgres_data:
+    driver: local
+    name: nexa_postgres_data
+  
+  pgadmin_data:
+    driver: local
+    name: nexa_pgadmin_data
+  
+  redis_data:
+    driver: local
+    name: nexa_redis_data
+
+# ===================
+# Network (Isolamento)
+# ===================
+networks:
+  nexa_network:
+    driver: bridge
+    name: nexa_network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
