@@ -59,5 +59,34 @@ export class UserRepository {
       VALUES (gen_random_uuid(), $1, $2, $3, NOW())
       RETURNING *
     `;
+
+    try {
+      const result = await query(sql, [organizationId, userId, role]);
+      logger.info(`Usuário ${userId} vinculado à organização ${organizationId}`);
+      return result.rows[0];
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new DatabaseError(
+          'Usuário já vinculado a esta organização',
+          'DUPLICATE_MEMBER',
+          error
+        );
+      }
+      throw new DatabaseError('Erro ao vincular usuário', 'DB_LINK_ERROR', error);
+    }
+  }
+  
+  /**
+   * Busca usuário por email
+   */
+  static async findByEmail(email) {
+    const sql = 'SELECT * FROM users WHERE email = $1';
+    
+    try {
+      const result = await query(sql, [email]);
+      return result.rows[0] ? new User(result.rows[0]) : null;
+    } catch (error) {
+      throw new DatabaseError('Erro ao buscar usuário', 'DB_FIND_ERROR', error);
+    }
   }
 }
