@@ -4,7 +4,7 @@
  */
 
 import { RegisterOrganizationDTO } from '../../application/dto/RegisterOrganizationDTO.js';
-import { RegisterOrganization, registerOrganization } from '../../application/use-cases/RegisterOrganization.js';
+import { RegisterOrganization } from '../../application/use-cases/RegisterOrganization.js';
 import { logger } from '../../shared/utils/logger.js';
 
 export class RegisterController {

@@ -3,7 +3,7 @@
  * @layer Primeira camada de validação (pré-processamento)
  */
 
-import joi from 'joi';
+import Joi from 'joi';
 import { config } from '../../config/environment.js';
 
 export const registerSchema = Joi.object({

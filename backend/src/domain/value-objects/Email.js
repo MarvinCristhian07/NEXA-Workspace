@@ -14,7 +14,7 @@ export class Email {
     this.#value = this.#normalize(email);
   }
   
-  #validate(email) {
+  #Validate(email) {
     if (!email || typeof email !== 'string') {
       throw new ValidationError('Email é obrigatório', 'EMAIL_REQUIRED');
     }

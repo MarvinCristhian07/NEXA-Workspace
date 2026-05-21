@@ -46,7 +46,7 @@ export const query = async (text, params = [], organizationId = null) => {
       );
     }
     
-    const result = await = await client.query(text, params);
+    const result = await client.query(text, params);
     return result;
   } finally {
     client.release();
