@@ -16,7 +16,7 @@ export class RegisterOrganizationDTO {
       organizationName: body.organizationName,
       cnpj: body.cnpj,
       email: body.email,
-      this: body.password
+      password: body.password
     });
   }
 }

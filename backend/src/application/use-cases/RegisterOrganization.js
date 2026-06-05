@@ -23,10 +23,17 @@ export class RegisterOrganization {
     // Sanitização de inputs
     const sanitizedData = {
       organizationName: InputSanitizer.sanitize(dto.organizationName),
-      cnpj: InputSanitizer.sanitize(dto.cnpj),
+      cnpj: dto.cnpj?.replace(/\s/g, '').trim(), // CNPJ só remove espaços, não sanitiza
       email: InputSanitizer.sanitize(dto.email),
       password: dto.password
     };
+
+    console.log('DADOS SANITIZADOS:', {
+      organizationName: sanitizedData.organizationName,
+      cnpj: sanitizedData.cnpj,
+      email: sanitizedData.email,
+      password: sanitizedData.password ? 'DEFINIDA' : 'UNDEFINED'
+    });
     
     // Verificação de duplicidade antes da transação
     const [existingOrg, existingUser] = await Promise.all([
@@ -45,7 +52,7 @@ export class RegisterOrganization {
     // Criação das entidades (validação ocorre nos construtores)
     const organization = new Organization({
       name: sanitizedData.organizationName,
-      document: sanitizedData.ncpj
+      document: sanitizedData.cnpj  // ← CORRETO
     });
     
     const user = new User({

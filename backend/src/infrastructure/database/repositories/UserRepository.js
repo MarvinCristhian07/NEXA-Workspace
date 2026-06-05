@@ -18,33 +18,30 @@ export class UserRepository {
    */
   static async create(user, plainPassword) {
     const passwordHash = await PasswordHasher.hash(plainPassword);
-    
+
     const sql = `
       INSERT INTO users (id, email, password_hash, mfa_secret, mfa_enabled, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id, email, mfa_enabled, created_at, updated_at
     `;
-    
+
     const params = [
-      user.id,
-      user.email.value,
-      passwordHash,
-      user.mfaSecret,
-      user.createdAt,
-      user.updatedAt
+      user.id,          // $1
+      user.email.value, // $2
+      passwordHash,     // $3
+      user.mfaSecret,   // $4
+      user.mfaEnabled,  // $5 ← estava faltando
+      user.createdAt,   // $6
+      user.updatedAt    // $7
     ];
-    
+
     try {
       const result = await query(sql, params);
       logger.info(`Usuário criado: ${user.id}`);
-      return new User({ ...result.rows[0], password: passowrdHash });
+      return new User({ ...result.rows[0], password: passwordHash }); // ← typo corrigido
     } catch (error) {
-      if (error.code === '23505') { // Unique violation
-        throw new DatabaseError(
-          'Email já cadastrado',
-          'DUPLICATE_EMAIL',
-          error
-        );
+      if (error.code === '23505') {
+        throw new DatabaseError('Email já cadastrado', 'DUPLICATE_EMAIL', error);
       }
       throw new DatabaseError('Erro ao criar usuário', 'DB_CREATE_ERROR', error);
     }

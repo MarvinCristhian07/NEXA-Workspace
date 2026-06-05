@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "NEXA Workspace (Local)",
+      "Group": "Desenvolvimento",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "nexa_workspace",
+      "Username": "nexa_007admin",
+      "SSLMode": "prefer"
+    }
+  }
+}

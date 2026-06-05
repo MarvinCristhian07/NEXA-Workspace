@@ -56,6 +56,8 @@ export class OrganizationRepository {
       const result = await query(sql, [document]);
       return result.rows[0] ? new Organization(result.rows[0]) : null;
     } catch (error) {
+      // Adiciona isso temporariamente para debug
+      console.error('ERRO ORIGINAL DO BANCO:', error.message, error.code);
       throw new DatabaseError('Erro ao buscar organização', 'DB_FIND_ERROR', error);
     }
   }
