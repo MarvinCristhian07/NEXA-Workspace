@@ -77,13 +77,42 @@ export class UserRepository {
    * Busca usuário por email
    */
   static async findByEmail(email) {
-    const sql = 'SELECT * FROM users WHERE email = $1';
+    const sql = `
+      SELECT id, email, password_hash, mfa_secret, mfa_enabled, created_at, updated_at
+      FROM users
+      WHERE email = $1
+    `;
     
     try {
       const result = await query(sql, [email]);
-      return result.rows[0] ? new User(result.rows[0]) : null;
+      return result.rows[0] ?? null;
     } catch (error) {
       throw new DatabaseError('Erro ao buscar usuário', 'DB_FIND_ERROR', error);
+    }
+  }
+
+  /**
+   * Busca o vínculo do usuário com sua organização
+   * @param {string} userId - ID do usuário
+   * @returns {Promise<Object|null>} Dados de membership
+   */
+  static async findMembership(userId) {
+    const sql = `
+      SELECT
+        om.organization_id,
+        om.role,
+        o.name AS organization_name
+      FROM organization_members om
+      INNER JOIN organizations o ON o.id = om.organization_id
+      WHERE om.user_id = $1
+      LIMIT 1
+    `;
+
+    try {
+      const result = await query(sql, [userId]);
+      return result.rows[0] ?? null;
+    } catch (error) {
+      throw new DatabaseError('Erro ao buscar membership', 'DB_FIND_ERROR', error);
     }
   }
 }

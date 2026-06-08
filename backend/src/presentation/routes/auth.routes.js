@@ -5,9 +5,11 @@
 
 import { Router } from 'express';
 import { RegisterController } from '../controllers/RegisterController.js';
+import { AuthController } from '../controllers/AuthController.js';
 import { validateRequest } from '../middlewares/requestValidator.js';
 import { registerSchema } from '../validators/registerSchema.js';
-import { registerLimiter } from '../middlewares/rateLimiter.js';
+import { loginSchema } from '../validators/loginSchema.js';
+import { loginLimiter, registerLimiter } from '../middlewares/rateLimiter.js';
 
 const router = Router();
 
@@ -22,5 +24,17 @@ router.post(
     validateRequest(registerSchema),
     RegisterController.handle
 );
+
+/**
+ * POST /api/auth/login
+ * @description Autenticação de usuário e emissão de JWT
+ * @security Rate limited, timing-safe, sem enumeração de usuários
+ */
+router.post(
+    '/login',
+    loginLimiter,
+    validateRequest(loginSchema),
+    AuthController.login
+)
 
 export default router;
