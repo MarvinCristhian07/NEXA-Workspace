@@ -6,35 +6,48 @@
 import { Router } from 'express';
 import { RegisterController } from '../controllers/RegisterController.js';
 import { AuthController } from '../controllers/AuthController.js';
+import { MfaController } from '../controllers/MfaController.js';
 import { validateRequest } from '../middlewares/requestValidator.js';
+import { authenticate } from '../middlewares/authenticate.js';
 import { registerSchema } from '../validators/registerSchema.js';
 import { loginSchema } from '../validators/loginSchema.js';
-import { loginLimiter, registerLimiter } from '../middlewares/rateLimiter.js';
+import { mfaTokenSchema, mfaValidateSchema } from '../validators/mfaSchema.js';
+import { loginLimiter, registerLimiter, mfaLimiter } from '../middlewares/rateLimiter.js';
 
 const router = Router();
 
-/**
- * POST /api/auth/register
- * @description Cadastro de nova organização (Onboarding B2B)
- * @security Rate limited, validação em múltiplas camadas
- */
-router.post(
-    '/register',
-    registerLimiter,
-    validateRequest(registerSchema),
-    RegisterController.handle
+// Onboarding
+router.post('/register',
+  registerLimiter,
+  validateRequest(registerSchema),
+  RegisterController.handle
 );
 
-/**
- * POST /api/auth/login
- * @description Autenticação de usuário e emissão de JWT
- * @security Rate limited, timing-safe, sem enumeração de usuários
- */
-router.post(
-    '/login',
-    loginLimiter,
-    validateRequest(loginSchema),
-    AuthController.login
-)
+// Login
+router.post('/login',
+  loginLimiter,
+  validateRequest(loginSchema),
+  AuthController.login
+);
+
+// MFA Setup (requer autenticação completa)
+router.get('/mfa/setup',
+  authenticate,
+  MfaController.setup
+);
+
+router.post('/mfa/verify-setup',
+  authenticate,
+  mfaLimiter,
+  validateRequest(mfaTokenSchema),
+  MfaController.verifySetup
+);
+
+// MFA Validação no login (usa mfaToken temporário)
+router.post('/mfa/validate',
+  mfaLimiter,
+  validateRequest(mfaValidateSchema),
+  MfaController.validate
+);
 
 export default router;

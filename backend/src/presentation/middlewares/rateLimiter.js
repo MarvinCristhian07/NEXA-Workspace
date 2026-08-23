@@ -37,3 +37,31 @@ export const loginLimiter = rateLimit({
     return `${req.ip}_${email}`;
   }
 });
+
+/**
+ * Rate Limiter Global - aplicando a todas as rotas
+ * Mais permissivo que os limiters específicos
+ */
+export const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: {
+    error: 'Muitas requisições. Tente novamente em alguns minutos.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip
+});
+
+export const mfaLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10, // 10 tentativas de código por IP em 15 minutos
+  message: {
+    error: 'Muitas tentativas de MFA. Tente novamente em 15 minutos.',
+    code: 'RATE_LIMIT_EXCEEDED'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip
+});

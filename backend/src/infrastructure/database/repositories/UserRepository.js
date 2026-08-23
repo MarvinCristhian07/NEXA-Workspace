@@ -8,6 +8,7 @@ import { User } from '../../../domain/entities/User.js';
 import { PasswordHasher } from '../../security/PasswordHasher.js';
 import { DatabaseError } from '../../../shared/errors/DatabaseError.js';
 import { logger } from '../../../shared/utils/logger.js';
+import { AppError } from '../../../shared/errors/AppError.js';
 
 export class UserRepository {
   /**
@@ -113,6 +114,76 @@ export class UserRepository {
       return result.rows[0] ?? null;
     } catch (error) {
       throw new DatabaseError('Erro ao buscar membership', 'DB_FIND_ERROR', error);
+    }
+  }
+
+  /**
+   * Ativa MFA para um usuário - salva secret criptografado e backup codes
+   */
+  static async enableMFA(userId, encryptedSecret, encryptedBackupCodes) {
+    const sql = `
+      UPDATE users
+      SET
+        mfa_secret = $1,
+        mfa_enabled = TRUE,
+        updated_at = NOW()
+      WHERE id = $2
+      RETURNING id, email, mfa_enabled, updated_at
+    `;
+
+    try {
+      const result = await query(sql, [encryptedSecret, userId]);
+      if (result.rowCount === 0) {
+        throw new AppError('Usuário não encontrado', 404, 'USER_NOT_FOUND');
+      }
+      return result.rows[0];
+    } catch (error) {
+      if (error.isOperational) throw error;
+      throw new DatabaseError('Erro ao ativar MFA', 'DB_UPDATE_ERROR', error);
+    }
+  }
+
+  /**
+   * Salva secret temporário durante setup (antes de confirmar)
+   */
+  static async saveMfaTempSecret(userId, encryptedSecret) {
+    const sql = `
+      UPDATE users
+      SET
+        mfa_secret = $1,
+        mfa_enabled = FALSE,
+        updated_at = NOW()
+      WHERE id = $2
+      RETURNING id
+    `;
+
+    try {
+      const result = await query(sql, [encryptedSecret, userId]);
+      if (result.rowCount === 0) {
+        throw new AppError('Usuário não encontrado', 404, 'USER_NOT_FOUND');
+      }
+      return result.rows[0];
+    } catch (error) {
+      if (error.isOperational) throw error;
+      throw new DatabaseError('Erro ao salvar secret MFA', 'DB_UPDATE_ERROR', error);
+    }
+  }
+
+  /**
+   * Busca usuário por ID (para uso interno)
+   */
+  static async findById(userId) {
+    const sql = `
+      SELECT id, email, password_hash, mfa_secret, mfa_enabled, created_at, updated_at
+      FROM users
+      WHERE id = $1
+    `;
+
+    try {
+      const result = await query(sql, [userId]);
+      return result.rows[0] ?? null;
+    } catch (error) {
+      throw new DatabaseError('Erro ao buscar usuário', 'DB_FIND_ERROR', error);
     }
   }
 }

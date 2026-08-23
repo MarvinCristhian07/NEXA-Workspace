@@ -48,16 +48,23 @@ export class LoginUser {
       );
     }
 
+    if (user.mfa_enabled) {
+      // Emite token temporário, válido por 5 minutos, para validar MFA
+      const mfaToken = JwtService.generateMfaTempToken(user.id);
+
+      logger.info(`Login parcial - MFA requerido: user=${user.id}`);
+
+      return {
+        mfaRequired: true,
+        mfaToken,
+        expiresIn: '5m'
+      };
+    }
+
     // 5. Busca organização do usuário
     const membership = await UserRepository.findMembership(user.id);
-
     if (!membership) {
-      logger.warn(`Usuário sem organização: ${user.id}`);
-      throw new AppError(
-        'Credenciais inválidas',
-        401,
-        'INVALID_CREDENTIALS'
-      );
+      throw new AppError('Credenciais inválidas', 401, 'INVALID_CREDENTIALS');
     }
 
     // 6. Monta payload mínimo do JWT (nunca incluir senha, mfa_secret, etc.)
@@ -70,17 +77,17 @@ export class LoginUser {
 
     // 7. Gera token
     const accessToken = JwtService.generateAccessToken(tokenPayload);
-
-    logger.info(`Login bem-sucedido: ${user.id}`);
+    logger.info(`Login bem-sucedido (sem MFA): user=${user.id}`);
 
     return {
+      mfaRequired: false,
       accessToken,
       expiresIn: '24h',
       user: {
         id: user.id,
         email: user.email,
         role: membership.role,
-        mfaEnabled: user.mfa_enabled,
+        mfaEnabled: false,
         organizationId: membership.organization_id
       }
     };
