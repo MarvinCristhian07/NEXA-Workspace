@@ -1,0 +1,778 @@
+openapi: 3.1.0
+
+info:
+  title: NEXA Workspace API
+  version: 1.0.0
+  description: |
+    ## API de Autenticação e Onboarding B2B
+
+    Esta documentação define os contratos da **Fase 1** do NEXA Workspace.
+
+    ### Fluxo de Autenticação
+
+    #### Sem MFA ativo
+    POST /register → 201 Created
+    POST /login    → 200 OK + accessToken
+
+    #### Com MFA ativo
+    POST /login        → 200 OK + mfaToken (temporário, 5min)
+    POST /mfa/validate → 200 OK + accessToken definitivo
+
+    ### Segurança
+    - Todos os tokens usam Bearer JWT
+    - Rate limiting ativo em todas as rotas
+    - Respostas de erro nunca revelam se email existe ou não
+
+  contact:
+    name: NEXA Workspace — Squad Core
+    email: dev@nexaworkspace.com
+
+  license:
+    name: Privado — Uso Interno
+    identifier: UNLICENSED
+
+servers:
+  - url: http://localhost:3000/api
+    description: Desenvolvimento Local
+
+  - url: https://api.nexaworkspace.com
+    description: Produção
+
+tags:
+  - name: Auth
+    description: Cadastro e autenticação de usuários
+  - name: MFA
+    description: Autenticação multi-fator (TOTP)
+  - name: Health
+    description: Status da API
+
+# ─────────────────────────────────────────
+# PATHS
+# ─────────────────────────────────────────
+paths:
+
+  # ══════════════════════════════════════
+  # POST /auth/register
+  # ══════════════════════════════════════
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Cadastro de nova organização (Onboarding B2B)
+      operationId: registerOrganization
+      description: |
+        Cria uma nova organização e o primeiro usuário administrador
+        em uma **transação atômica** — se qualquer etapa falhar,
+        nenhum dado é persistido.
+
+        ### Regras de negócio
+        - CNPJ deve ser válido (validação algorítmica completa)
+        - Email deve ser único no sistema
+        - CNPJ deve ser único no sistema
+        - Senha mínima de 12 caracteres com critérios OWASP
+        - Usuário criado automaticamente como `ADMIN` da organização
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              exemplo_valido:
+                summary: Cadastro válido
+                value:
+                  organizationName: Synapse Neural Systems
+                  cnpj: 12.345.678/0001-95
+                  email: admin@synapse.io
+                  password: Syn@pse_Neural!2026
+
+      responses:
+        '201':
+          description: Organização cadastrada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+              examples:
+                sucesso:
+                  summary: Cadastro realizado
+                  value:
+                    success: true
+                    message: Organização cadastrada com sucesso
+                    data:
+                      organization:
+                        id: 550e8400-e29b-41d4-a716-446655440000
+                        name: Synapse Neural Systems
+                        document: "12345678000195"
+                      user:
+                        id: 660e8400-e29b-41d4-a716-446655440001
+                        email: admin@synapse.io
+
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ══════════════════════════════════════
+  # POST /auth/login
+  # ══════════════════════════════════════
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Autenticação de usuário
+      operationId: loginUser
+      description: |
+        Autentica o usuário com email e senha.
+        
+        ### Comportamento por estado do MFA
+        
+        | MFA ativo | Resposta |
+        |-----------|----------|
+        | ❌ Não    | `accessToken` definitivo imediatamente |
+        | ✅ Sim    | `mfaToken` temporário (5min) → chamar `POST /auth/mfa/validate` |
+
+        ### Segurança
+        - Mesma resposta para email inválido e senha errada (anti-enumeração)
+        - Rate limiting: **10 tentativas por 15 minutos por IP**
+        - Timing-safe: mesmo tempo de resposta independente do erro
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              sem_mfa:
+                summary: Login sem MFA
+                value:
+                  email: admin@synapse.io
+                  password: Syn@pse_Neural!2026
+              com_mfa:
+                summary: Login com MFA ativo (mesma requisição)
+                value:
+                  email: admin@synapse.io
+                  password: Syn@pse_Neural!2026
+
+      responses:
+        '200':
+          description: Autenticação bem-sucedida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                sem_mfa:
+                  summary: Login sem MFA — retorna token definitivo
+                  value:
+                    success: true
+                    message: Login realizado com sucesso
+                    data:
+                      mfaRequired: false
+                      accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      expiresIn: 24h
+                      user:
+                        id: 660e8400-e29b-41d4-a716-446655440001
+                        email: admin@synapse.io
+                        role: ADMIN
+                        mfaEnabled: false
+                        organizationId: 550e8400-e29b-41d4-a716-446655440000
+
+                com_mfa:
+                  summary: Login com MFA ativo — retorna token temporário
+                  value:
+                    success: true
+                    message: Login realizado com sucesso
+                    data:
+                      mfaRequired: true
+                      mfaToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      expiresIn: 5m
+
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ══════════════════════════════════════
+  # GET /auth/mfa/setup
+  # ══════════════════════════════════════
+  /auth/mfa/setup:
+    get:
+      tags: [MFA]
+      summary: Iniciar configuração do MFA
+      operationId: setupMFA
+      description: |
+        Gera o QR Code e os códigos de backup para configurar o
+        Google Authenticator (ou qualquer app TOTP compatível).
+
+        ### Importante
+        - Os **backup codes são exibidos apenas uma vez** — o frontend
+          deve forçar o usuário a salvá-los antes de continuar
+        - O QR Code retornado é uma imagem PNG em base64 (`data:image/png;base64,...`)
+        - Após esse endpoint, chamar `POST /auth/mfa/verify-setup` para confirmar
+
+      security:
+        - BearerAuth: []
+
+      responses:
+        '200':
+          description: QR Code e backup codes gerados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaSetupResponse'
+              examples:
+                sucesso:
+                  summary: Setup iniciado
+                  value:
+                    success: true
+                    message: Escaneie o QR Code com seu app autenticador. Salve os códigos de backup!
+                    data:
+                      qrCode: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...
+                      backupCodes:
+                        - A1B2-C3D4
+                        - E5F6-G7H8
+                        - I9J0-K1L2
+                        - M3N4-O5P6
+                        - Q7R8-S9T0
+                        - U1V2-W3X4
+                        - Y5Z6-A7B8
+                        - C9D0-E1F2
+
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ══════════════════════════════════════
+  # POST /auth/mfa/verify-setup
+  # ══════════════════════════════════════
+  /auth/mfa/verify-setup:
+    post:
+      tags: [MFA]
+      summary: Confirmar ativação do MFA
+      operationId: verifyMFASetup
+      description: |
+        Confirma que o usuário escaneou o QR Code corretamente,
+        validando o primeiro código TOTP gerado pelo app.
+        
+        Após esse endpoint com sucesso, o MFA estará **ativo** e
+        todos os logins futuros exigirão o código do app.
+
+      security:
+        - BearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaTokenRequest'
+            examples:
+              exemplo:
+                summary: Código do Google Authenticator
+                value:
+                  token: "123456"
+
+      responses:
+        '200':
+          description: MFA ativado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaVerifySetupResponse'
+              examples:
+                sucesso:
+                  summary: MFA ativado
+                  value:
+                    success: true
+                    message: Autenticação de dois fatores ativada com sucesso
+                    data:
+                      mfaEnabled: true
+
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ══════════════════════════════════════
+  # POST /auth/mfa/validate
+  # ══════════════════════════════════════
+  /auth/mfa/validate:
+    post:
+      tags: [MFA]
+      summary: Validar código MFA no login
+      operationId: validateMFA
+      description: |
+        Segunda etapa do login quando MFA está ativo.
+        
+        Recebe o `mfaToken` temporário retornado pelo `POST /auth/login`
+        e o código de 6 dígitos do app autenticador.
+        
+        Retorna o `accessToken` definitivo após validação bem-sucedida.
+
+        ### Rate Limiting
+        - **10 tentativas** por IP por 15 minutos
+        - Token temporário expira em **5 minutos**
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaValidateRequest'
+            examples:
+              exemplo:
+                summary: Validação de MFA
+                value:
+                  mfaToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  token: "123456"
+
+      responses:
+        '200':
+          description: Autenticação completa — token definitivo emitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaValidateResponse'
+              examples:
+                sucesso:
+                  summary: Login completo com MFA
+                  value:
+                    success: true
+                    message: Autenticação completa
+                    data:
+                      accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      expiresIn: 24h
+                      user:
+                        id: 660e8400-e29b-41d4-a716-446655440001
+                        email: admin@synapse.io
+                        role: ADMIN
+                        mfaEnabled: true
+                        organizationId: 550e8400-e29b-41d4-a716-446655440000
+
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ══════════════════════════════════════
+  # GET /health
+  # ══════════════════════════════════════
+  /health:
+    get:
+      tags: [Health]
+      summary: Status da API
+      operationId: healthCheck
+      description: Verifica se a API está operacional.
+      responses:
+        '200':
+          description: API operacional
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+# ─────────────────────────────────────────
+# COMPONENTS
+# ─────────────────────────────────────────
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Token JWT obtido via `POST /auth/login` (sem MFA)
+        ou `POST /auth/mfa/validate` (com MFA).
+        
+        Formato: `Authorization: Bearer <token>`
+
+  # ─── REQUEST SCHEMAS ──────────────────
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [organizationName, cnpj, email, password]
+      properties:
+        organizationName:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Synapse Neural Systems
+          description: Nome completo da organização
+
+        cnpj:
+          type: string
+          pattern: '^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$|^\d{14}$'
+          example: 12.345.678/0001-95
+          description: CNPJ da organização (com ou sem formatação)
+
+        email:
+          type: string
+          format: email
+          maxLength: 320
+          example: admin@synapse.io
+          description: Email do administrador (usado para login)
+
+        password:
+          type: string
+          minLength: 12
+          maxLength: 128
+          example: Syn@pse_Neural!2026
+          description: |
+            Senha do administrador. Deve conter pelo menos 3 de:
+            maiúsculas, minúsculas, números, caracteres especiais
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@synapse.io
+
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+          example: Syn@pse_Neural!2026
+
+    MfaTokenRequest:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          pattern: '^\d{6}$'
+          minLength: 6
+          maxLength: 6
+          example: "123456"
+          description: Código TOTP de 6 dígitos do app autenticador
+
+    MfaValidateRequest:
+      type: object
+      required: [mfaToken, token]
+      properties:
+        mfaToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          description: Token temporário retornado pelo POST /auth/login
+
+        token:
+          type: string
+          pattern: '^\d{6}$'
+          minLength: 6
+          maxLength: 6
+          example: "123456"
+          description: Código TOTP de 6 dígitos do app autenticador
+
+  # ─── RESPONSE SCHEMAS ─────────────────
+    RegisterResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Organização cadastrada com sucesso
+        data:
+          type: object
+          properties:
+            organization:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                document:
+                  type: string
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                email:
+                  type: string
+                  format: email
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/LoginResponseSemMFA'
+            - $ref: '#/components/schemas/LoginResponseComMFA'
+
+    LoginResponseSemMFA:
+      type: object
+      properties:
+        mfaRequired:
+          type: boolean
+          example: false
+        accessToken:
+          type: string
+        expiresIn:
+          type: string
+          example: 24h
+        user:
+          $ref: '#/components/schemas/UserPayload'
+
+    LoginResponseComMFA:
+      type: object
+      properties:
+        mfaRequired:
+          type: boolean
+          example: true
+        mfaToken:
+          type: string
+          description: Token temporário válido por 5 minutos
+        expiresIn:
+          type: string
+          example: 5m
+
+    MfaSetupResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            qrCode:
+              type: string
+              description: Imagem PNG do QR Code em base64
+              example: data:image/png;base64,iVBORw0KGgo...
+            backupCodes:
+              type: array
+              items:
+                type: string
+                example: A1B2-C3D4
+              minItems: 8
+              maxItems: 8
+
+    MfaVerifySetupResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            mfaEnabled:
+              type: boolean
+              example: true
+
+    MfaValidateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+            expiresIn:
+              type: string
+              example: 24h
+            user:
+              $ref: '#/components/schemas/UserPayload'
+
+    UserPayload:
+      type: object
+      description: Dados públicos do usuário incluídos no token JWT
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [ADMIN, MEMBER, GUEST]
+        mfaEnabled:
+          type: boolean
+        organizationId:
+          type: string
+          format: uuid
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          example: 1.0.0
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  message:
+                    type: string
+
+  # ─── RESPONSES REUTILIZÁVEIS ──────────
+  responses:
+    ValidationError:
+      description: Dados inválidos ou ausentes
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            campo_obrigatorio:
+              value:
+                success: false
+                error:
+                  message: Dados inválidos
+                  code: VALIDATION_ERROR
+                  details:
+                    - field: email
+                      message: Email é obrigatório
+            cnpj_invalido:
+              value:
+                success: false
+                error:
+                  message: CNPJ inválido
+                  code: CNPJ_INVALID_CHECK_DIGITS
+                  details: []
+
+    UnauthorizedError:
+      description: |
+        Não autorizado. Possíveis causas:
+        - Credenciais inválidas (email ou senha)
+        - Token ausente, expirado ou malformado
+        - Código MFA inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            credenciais_invalidas:
+              value:
+                success: false
+                error:
+                  message: Credenciais inválidas
+                  code: INVALID_CREDENTIALS
+            token_expirado:
+              value:
+                success: false
+                error:
+                  message: Token expirado
+                  code: TOKEN_EXPIRED
+            mfa_invalido:
+              value:
+                success: false
+                error:
+                  message: Código MFA inválido ou expirado
+                  code: MFA_TOKEN_INVALID
+
+    ConflictError:
+      description: Recurso já existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            email_duplicado:
+              value:
+                success: false
+                error:
+                  message: Email já cadastrado
+                  code: DUPLICATE_EMAIL
+            cnpj_duplicado:
+              value:
+                success: false
+                error:
+                  message: CNPJ já cadastrado
+                  code: DUPLICATE_CNPJ
+            mfa_ativo:
+              value:
+                success: false
+                error:
+                  message: MFA já está ativado
+                  code: MFA_ALREADY_ENABLED
+
+    RateLimitError:
+      description: Muitas requisições
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            rate_limit:
+              value:
+                success: false
+                error:
+                  message: Muitas tentativas. Tente novamente em 15 minutos.
+                  code: RATE_LIMIT_EXCEEDED
+
+    InternalError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            erro_interno:
+              value:
+                success: false
+                error:
+                  message: Erro interno do servidor
+                  code: INTERNAL_SERVER_ERROR
