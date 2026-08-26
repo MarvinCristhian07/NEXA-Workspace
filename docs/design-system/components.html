@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXA Workspace — Biblioteca de Componentes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css">
+  <style>
+    :root {
+      --navy-50: #EEF1F8; --navy-200: #C5CEE8; --navy-400: #7B91CC;
+      --navy-600: #3D5FA8; --navy-800: #1E3A7A; --navy-950: #0D1F4A;
+      --cyan-500: #19C4E0; --cyan-700: #0A90A8;
+      --slate-50: #FAFAFA; --slate-100: #F0F1F5; --slate-200: #D6D9E4;
+      --slate-400: #9099B2; --slate-600: #515A77; --slate-900: #1E2440;
+      --success: #22A05A; --success-bg: #EDFCF2; --success-text: #145E38;
+      --warning: #E5A000; --warning-bg: #FFF8E6; --warning-text: #7A5200;
+      --danger: #D93020;  --danger-bg:  #FEF0EE; --danger-text:  #6E1A14;
+      --info-bg: #EEF1F8; --info-text: #1E3A7A;
+      --surface-base: #FAFAFA; --surface-raised: #F0F1F5; --surface-white: #FFFFFF;
+      --text-primary: #1E2440; --text-secondary: #515A77; --text-muted: #9099B2;
+      --border: #D6D9E4; --border-strong: #9099B2;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 2px; --radius-md: 6px; --radius-lg: 10px; --radius-xl: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--surface-base); color: var(--text-primary); line-height: 1.5; }
+    .page { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+    /* Header */
+    .page-header { margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .page-header h1 { font-size: 24px; font-weight: 600; color: var(--text-primary); }
+    .page-header p { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+    .version-tag { display: inline-block; padding: 3px 10px; background: var(--navy-50); color: var(--navy-800); border: 0.5px solid var(--navy-200); border-radius: 20px; font-size: 11px; font-weight: 500; margin-top: 10px; }
+
+    /* Section */
+    .section { margin-bottom: 56px; }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); }
+
+    /* Row */
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .state-label { font-size: 10px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 16px; height: 36px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; white-space: nowrap; font-family: var(--font-sans); }
+    .btn-primary { background: var(--navy-600); color: #fff; }
+    .btn-primary:hover { background: var(--navy-800); }
+    .btn-secondary { background: transparent; color: var(--text-primary); border: 0.5px solid var(--border-strong); }
+    .btn-secondary:hover { background: var(--surface-raised); }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: none; }
+    .btn-ghost:hover { background: var(--surface-raised); color: var(--text-primary); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #A82518; }
+    .btn-sm { height: 28px; padding: 0 12px; font-size: 12px; border-radius: 6px; }
+    .btn-lg { height: 44px; padding: 0 24px; font-size: 15px; border-radius: 10px; }
+    .btn:active { transform: scale(.98); }
+    .btn-disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+
+    /* Inputs */
+    .input-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 220px; }
+    .input-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+    .input-hint { font-size: 11px; color: var(--text-muted); }
+    .input-error-msg { font-size: 11px; color: var(--danger); }
+    .inp { width: 100%; height: 36px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-family: var(--font-sans); color: var(--text-primary); background: var(--surface-white); border: 0.5px solid var(--border-strong); outline: none; transition: border-color .15s, box-shadow .15s; }
+    .inp:hover { border-color: #6E7A94; }
+    .inp:focus { border-color: var(--navy-600); box-shadow: 0 0 0 3px rgba(61,95,168,.12); }
+    .inp-error { border-color: var(--danger); }
+    .inp-error:focus { box-shadow: 0 0 0 3px rgba(217,48,32,.12); }
+    .inp-success { border-color: var(--success); }
+    .inp-success:focus { box-shadow: 0 0 0 3px rgba(34,160,90,.12); }
+    .inp-disabled { opacity: .4; cursor: not-allowed; background: var(--surface-raised); }
+    .inp-icon-wrap { position: relative; }
+    .inp-icon-wrap .inp { padding-right: 36px; }
+    .inp-icon-wrap.has-prefix .inp { padding-left: 34px; }
+    .inp-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; }
+    .inp-prefix { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+    .pw-toggle { cursor: pointer; }
+    textarea.inp { height: 80px; padding: 10px 12px; resize: none; line-height: 1.5; }
+
+    /* Checkboxes */
+    .check-row { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+    .check-box { width: 16px; height: 16px; border-radius: 4px; border: 0.5px solid var(--border-strong); background: var(--surface-white); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; }
+    .check-box.checked { background: var(--navy-600); border-color: var(--navy-600); }
+    .check-box.indeterminate { background: var(--navy-600); border-color: var(--navy-600); }
+    .check-box.disabled { opacity: .4; }
+    .check-box.error-state { border-color: var(--danger); }
+    .check-label { font-size: 14px; color: var(--text-primary); }
+
+    /* Toasts */
+    .toast { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 10px; border: 0.5px solid; font-size: 13px; line-height: 1.4; max-width: 360px; }
+    .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .toast-content { flex: 1; }
+    .toast-title { font-weight: 500; font-size: 13px; margin-bottom: 1px; }
+    .toast-msg { font-size: 12px; opacity: .8; }
+    .toast-close { font-size: 14px; cursor: pointer; opacity: .5; flex-shrink: 0; }
+    .toast-close:hover { opacity: 1; }
+    .toast-success { background: var(--success-bg); border-color: var(--success); color: var(--success-text); }
+    .toast-warning { background: var(--warning-bg); border-color: var(--warning); color: var(--warning-text); }
+    .toast-danger  { background: var(--danger-bg);  border-color: var(--danger);  color: var(--danger-text);  }
+    .toast-info    { background: var(--info-bg);    border-color: var(--navy-600); color: var(--info-text);    }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 0.5px solid; }
+    .badge-primary { background: var(--navy-50);   color: var(--navy-800);    border-color: var(--navy-200);  }
+    .badge-success { background: var(--success-bg); color: var(--success-text); border-color: #9FD4B4; }
+    .badge-warning { background: var(--warning-bg); color: var(--warning-text); border-color: #F0CC80; }
+    .badge-danger  { background: var(--danger-bg);  color: var(--danger-text);  border-color: #F0B4AE; }
+    .badge-neutral { background: var(--surface-raised); color: var(--text-secondary); border-color: var(--border-strong); }
+
+    /* Modal */
+    .modal-overlay { background: rgba(15,20,40,.45); border-radius: 14px; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 280px; }
+    .modal { background: var(--surface-white); border-radius: 14px; border: 0.5px solid var(--border); width: 100%; max-width: 400px; overflow: hidden; }
+    .modal-header { padding: 18px 20px 14px; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 0.5px solid var(--border); }
+    .modal-title { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+    .modal-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .modal-close { font-size: 16px; color: var(--text-muted); cursor: pointer; padding: 2px; border-radius: 4px; background: none; border: none; }
+    .modal-close:hover { background: var(--surface-raised); color: var(--text-primary); }
+    .modal-body { padding: 16px 20px; font-size: 14px; color: var(--text-secondary); line-height: 1.6; display: flex; flex-direction: column; gap: 14px; }
+    .modal-footer { padding: 14px 20px; display: flex; gap: 8px; justify-content: flex-end; border-top: 0.5px solid var(--border); background: var(--surface-raised); }
+
+    /* Divider */
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 2.5rem 0; }
+
+    /* Spec table */
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .spec-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; border-bottom: 0.5px solid var(--border); background: var(--surface-raised); }
+    .spec-table td { padding: 8px 12px; color: var(--text-secondary); border-bottom: 0.5px solid var(--border); vertical-align: top; }
+    .spec-table td:first-child { color: var(--text-primary); font-family: var(--font-mono); font-size: 12px; }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-wrap { background: var(--surface-white); border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <h1>Biblioteca de Componentes</h1>
+    <p>NEXA Workspace · Átomos e Moléculas · Fase 1</p>
+    <span class="version-tag">Design System v1.0</span>
+  </div>
+
+  <!-- BOTÕES -->
+  <div class="section">
+    <div class="section-label">01 · Botões — variantes e tamanhos</div>
+    <div class="row">
+      <div class="col">
+        <div class="state-label">Primary</div>
+        <button class="btn btn-primary"><i class="ti ti-plus" aria-hidden="true"></i>Criar projeto</button>
+        <button class="btn btn-primary btn-sm">Criar projeto</button>
+        <button class="btn btn-primary btn-lg">Criar projeto</button>
+      </div>
+      <div class="col">
+        <div class="state-label">Secondary</div>
+        <button class="btn btn-secondary"><i class="ti ti-download" aria-hidden="true"></i>Exportar</button>
+        <button class="btn btn-secondary btn-sm">Exportar</button>
+        <button class="btn btn-secondary btn-lg">Exportar</button>
+      </div>
+      <div class="col">
+        <div class="state-label">Ghost</div>
+        <button class="btn btn-ghost">Cancelar</button>
+        <button class="btn btn-ghost btn-sm">Cancelar</button>
+        <button class="btn btn-ghost btn-lg">Cancelar</button>
+      </div>
+      <div class="col">
+        <div class="state-label">Danger</div>
+        <button class="btn btn-danger"><i class="ti ti-trash" aria-hidden="true"></i>Excluir</button>
+        <button class="btn btn-danger btn-sm">Excluir</button>
+        <button class="btn btn-danger btn-lg">Excluir</button>
+      </div>
+    </div>
+
+    <div class="state-label" style="margin-top:1.5rem">Estados</div>
+    <div class="row" style="align-items:center">
+      <div class="col" style="align-items:center"><div class="state-label">Default</div><button class="btn btn-primary">Salvar</button></div>
+      <div class="col" style="align-items:center"><div class="state-label">Hover</div><button class="btn btn-primary" style="background:#1E3A7A">Salvar</button></div>
+      <div class="col" style="align-items:center"><div class="state-label">Active</div><button class="btn btn-primary" style="background:#1E3A7A;transform:scale(.98)">Salvar</button></div>
+      <div class="col" style="align-items:center"><div class="state-label">Loading</div><button class="btn btn-primary btn-disabled" style="opacity:.7"><i class="ti ti-refresh" aria-hidden="true"></i>Salvando…</button></div>
+      <div class="col" style="align-items:center"><div class="state-label">Disabled</div><button class="btn btn-primary btn-disabled">Salvar</button></div>
+      <div class="col" style="align-items:center"><div class="state-label">Icon only</div><button class="btn btn-secondary" aria-label="Configurações" style="padding:0;width:36px;justify-content:center"><i class="ti ti-settings" aria-hidden="true" style="font-size:16px"></i></button></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- INPUTS -->
+  <div class="section">
+    <div class="section-label">02 · Inputs — estados</div>
+    <div class="row" style="flex-wrap:wrap;gap:16px">
+      <div class="input-wrap">
+        <label class="input-label" for="inp-text">Nome da organização</label>
+        <input id="inp-text" class="inp" placeholder="Acme Corporation" type="text">
+        <span class="input-hint">Será exibido em relatórios e documentos.</span>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label" for="inp-email">Email corporativo</label>
+        <div class="inp-icon-wrap has-prefix">
+          <span class="inp-prefix"><i class="ti ti-mail" aria-hidden="true"></i></span>
+          <input id="inp-email" class="inp" placeholder="nome@empresa.com" type="email" style="padding-left:34px">
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label" for="pw-input">Senha</label>
+        <div class="inp-icon-wrap" style="position:relative">
+          <input id="pw-input" class="inp" placeholder="Mínimo 12 caracteres" type="password" style="padding-right:36px">
+          <span class="inp-icon pw-toggle" onclick="togglePw()" aria-label="Mostrar senha" style="cursor:pointer">
+            <i class="ti ti-eye" id="pw-icon" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label" for="inp-cnpj">CNPJ</label>
+        <div class="inp-icon-wrap" style="position:relative">
+          <input id="inp-cnpj" class="inp inp-error" placeholder="00.000.000/0001-00" value="12.345" type="text" style="padding-right:36px">
+          <span class="inp-icon" style="color:var(--danger)"><i class="ti ti-alert-circle" aria-hidden="true"></i></span>
+        </div>
+        <span class="input-error-msg">CNPJ inválido. Verifique o formato.</span>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label" for="inp-ok">Email verificado</label>
+        <div class="inp-icon-wrap" style="position:relative">
+          <input id="inp-ok" class="inp inp-success" value="admin@acme.com" type="email" style="padding-right:36px">
+          <span class="inp-icon" style="color:var(--success)"><i class="ti ti-check" aria-hidden="true"></i></span>
+        </div>
+        <span class="input-hint" style="color:var(--success)">Email confirmado.</span>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label" style="opacity:.4">Desabilitado</label>
+        <input class="inp inp-disabled" placeholder="Não editável" type="text" disabled>
+      </div>
+    </div>
+    <div style="margin-top:1rem;max-width:440px">
+      <div class="input-wrap">
+        <label class="input-label" for="inp-ta">Descrição do projeto</label>
+        <textarea id="inp-ta" class="inp" placeholder="Descreva o escopo e objetivos…"></textarea>
+        <span class="input-hint">Máximo 500 caracteres.</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- CHECKBOXES -->
+  <div class="section">
+    <div class="section-label">03 · Checkboxes — estados</div>
+    <div class="row" style="flex-wrap:wrap;gap:24px;align-items:flex-start">
+      <div class="col" style="gap:12px">
+        <div class="state-label">Padrão</div>
+        <label class="check-row" onclick="toggle(this)">
+          <div class="check-box"></div><span class="check-label">Não marcado</span>
+        </label>
+        <label class="check-row" onclick="toggle(this)">
+          <div class="check-box checked"><i class="ti ti-check" style="font-size:10px;color:#fff" aria-hidden="true"></i></div>
+          <span class="check-label">Marcado</span>
+        </label>
+        <label class="check-row">
+          <div class="check-box indeterminate"><i class="ti ti-minus" style="font-size:10px;color:#fff" aria-hidden="true"></i></div>
+          <span class="check-label" style="color:var(--text-secondary)">Indeterminado</span>
+        </label>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="state-label">Desabilitado</div>
+        <label class="check-row" style="cursor:not-allowed">
+          <div class="check-box disabled"></div><span class="check-label" style="opacity:.4">Não marcado</span>
+        </label>
+        <label class="check-row" style="cursor:not-allowed">
+          <div class="check-box checked disabled"><i class="ti ti-check" style="font-size:10px;color:#fff" aria-hidden="true"></i></div>
+          <span class="check-label" style="opacity:.4">Marcado</span>
+        </label>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="state-label">Erro</div>
+        <label class="check-row">
+          <div class="check-box error-state"></div>
+          <span class="check-label" style="color:var(--danger)">Aceite obrigatório</span>
+        </label>
+        <span style="font-size:11px;color:var(--danger);padding-left:24px">Você deve aceitar os termos.</span>
+      </div>
+      <div class="col" style="gap:12px">
+        <div class="state-label">Grupo de permissões</div>
+        <label class="check-row" onclick="toggle(this)"><div class="check-box checked"><i class="ti ti-check" style="font-size:10px;color:#fff" aria-hidden="true"></i></div><span class="check-label">Visualizar projetos</span></label>
+        <label class="check-row" onclick="toggle(this)"><div class="check-box checked"><i class="ti ti-check" style="font-size:10px;color:#fff" aria-hidden="true"></i></div><span class="check-label">Editar tarefas</span></label>
+        <label class="check-row" onclick="toggle(this)"><div class="check-box"></div><span class="check-label">Gerenciar membros</span></label>
+        <label class="check-row" onclick="toggle(this)"><div class="check-box"></div><span class="check-label">Excluir projetos</span></label>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- TOASTS -->
+  <div class="section">
+    <div class="section-label">04 · Toasts — mensagens de alerta</div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:380px">
+      <div class="toast toast-success">
+        <i class="ti ti-circle-check toast-icon" aria-hidden="true"></i>
+        <div class="toast-content"><div class="toast-title">Organização criada</div><div class="toast-msg">Acme Corporation foi cadastrada com sucesso.</div></div>
+        <i class="ti ti-x toast-close" aria-label="Fechar" onclick="this.closest('.toast').remove()"></i>
+      </div>
+      <div class="toast toast-info">
+        <i class="ti ti-info-circle toast-icon" aria-hidden="true"></i>
+        <div class="toast-content"><div class="toast-title">Atualização disponível</div><div class="toast-msg">Nova versão do sistema disponível.</div></div>
+        <i class="ti ti-x toast-close" aria-label="Fechar" onclick="this.closest('.toast').remove()"></i>
+      </div>
+      <div class="toast toast-warning">
+        <i class="ti ti-alert-triangle toast-icon" aria-hidden="true"></i>
+        <div class="toast-content"><div class="toast-title">Sessão expirando</div><div class="toast-msg">Sua sessão expira em 5 minutos.</div></div>
+        <i class="ti ti-x toast-close" aria-label="Fechar" onclick="this.closest('.toast').remove()"></i>
+      </div>
+      <div class="toast toast-danger">
+        <i class="ti ti-alert-circle toast-icon" aria-hidden="true"></i>
+        <div class="toast-content"><div class="toast-title">Falha ao salvar</div><div class="toast-msg">Não foi possível salvar as alterações.</div></div>
+        <i class="ti ti-x toast-close" aria-label="Fechar" onclick="this.closest('.toast').remove()"></i>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- BADGES -->
+  <div class="section">
+    <div class="section-label">05 · Badges</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <span class="badge badge-primary"><i class="ti ti-user" style="font-size:10px" aria-hidden="true"></i>Admin</span>
+      <span class="badge badge-primary">Member</span>
+      <span class="badge badge-success"><i class="ti ti-circle-check" style="font-size:10px" aria-hidden="true"></i>Ativo</span>
+      <span class="badge badge-warning"><i class="ti ti-clock" style="font-size:10px" aria-hidden="true"></i>Em revisão</span>
+      <span class="badge badge-danger"><i class="ti ti-x" style="font-size:10px" aria-hidden="true"></i>Bloqueado</span>
+      <span class="badge badge-neutral">Rascunho</span>
+      <span class="badge badge-neutral"><i class="ti ti-lock" style="font-size:10px" aria-hidden="true"></i>MFA ativo</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- MODAL DESTRUTIVO -->
+  <div class="section">
+    <div class="section-label">06 · Modal — confirmação destrutiva</div>
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div><div class="modal-title">Excluir projeto</div><div class="modal-subtitle">Esta ação não pode ser desfeita.</div></div>
+          <button class="modal-close" aria-label="Fechar modal"><i class="ti ti-x" aria-hidden="true"></i></button>
+        </div>
+        <div class="modal-body" style="display:block">
+          Você está prestes a excluir o projeto <strong style="color:var(--text-primary)">Sprint Q2 — NEXA Core</strong> e todos os seus dados vinculados. Esta ação é permanente.
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost btn-sm">Cancelar</button>
+          <button class="btn btn-danger btn-sm"><i class="ti ti-trash" style="font-size:12px" aria-hidden="true"></i>Excluir projeto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- MODAL FORMULÁRIO -->
+  <div class="section">
+    <div class="section-label">07 · Modal — formulário inline</div>
+    <div class="modal-overlay">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-header">
+          <div class="modal-title">Convidar membro</div>
+          <button class="modal-close" aria-label="Fechar modal"><i class="ti ti-x" aria-hidden="true"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-wrap" style="min-width:unset">
+            <label class="input-label" for="m-email">Email</label>
+            <div class="inp-icon-wrap has-prefix" style="position:relative">
+              <span class="inp-prefix"><i class="ti ti-mail" aria-hidden="true"></i></span>
+              <input id="m-email" class="inp" placeholder="colega@empresa.com" type="email" style="padding-left:34px">
+            </div>
+          </div>
+          <div class="input-wrap" style="min-width:unset">
+            <label class="input-label" for="m-role">Função</label>
+            <select id="m-role" class="inp" style="cursor:pointer">
+              <option>Membro</option><option>Gerente</option><option>Admin</option>
+            </select>
+          </div>
+          <label class="check-row">
+            <div class="check-box checked"><i class="ti ti-check" style="font-size:10px;color:#fff" aria-hidden="true"></i></div>
+            <span class="check-label" style="font-size:13px">Enviar email de boas-vindas</span>
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost btn-sm">Cancelar</button>
+          <button class="btn btn-primary btn-sm"><i class="ti ti-send" style="font-size:12px" aria-hidden="true"></i>Enviar convite</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggle(row) {
+  const box = row.querySelector('.check-box');
+  if (box.classList.contains('checked')) {
+    box.classList.remove('checked');
+    box.innerHTML = '';
+  } else {
+    box.classList.add('checked');
+    box.innerHTML = '<i class="ti ti-check" style="font-size:10px;color:#fff" aria-hidden="true"></i>';
+  }
+}
+function togglePw() {
+  const inp = document.getElementById('pw-input');
+  const icon = document.getElementById('pw-icon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.className = 'ti ti-eye-off';
+  } else {
+    inp.type = 'password';
+    icon.className = 'ti ti-eye';
+  }
+}
+</script>
+</body>
+</html>
