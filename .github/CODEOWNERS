@@ -1,0 +1,15 @@
+# Dono global - revisa qualquer arquivo não coberto abaixo
+* @marvin
+
+# Backend - Marvin e Filipe revisam
+/backend/ @marvin @filipe
+
+# Frontend - Sofia, Bruno e Marvin revisam
+/frontend/ @sofia @bruno @marvin
+
+# Infraestrutura Docker - Bruno e Marvin revisam
+/backend/docker/ @bruno @marvin
+/backend/docker-compose.yml @bruno @marvin
+
+# Documentação de API - todos revisam
+/docs/ @marvin @filipe @bruno @sofia

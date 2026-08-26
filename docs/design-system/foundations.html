@@ -1,0 +1,497 @@
+
+<style>
+* { box-sizing: border-box; margin: 1%; padding: 0; }
+body { font-family: var(--font-sans); background-color: #161616; color: white;}
+
+.ds-section { margin-bottom: 2.5rem; }
+.ds-label { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .75rem; }
+.ds-title { font-size: 18px; font-weight: 500; color: var(--text-primary); margin-bottom: .25rem; }
+.ds-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.25rem; }
+
+.swatch-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.swatch { border-radius: 8px; overflow: hidden; flex: 1; min-width: 52px; }
+.swatch-color { height: 52px; }
+.swatch-info { padding: 6px 8px; background: var(--surface-2); border: 0.5px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; }
+.swatch-name { font-size: 11px; font-weight: 500; color: var(--text-primary); display: block; }
+.swatch-hex  { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.role-card { border-radius: 10px; overflow: hidden; border: 0.5px solid var(--border); }
+.role-card-top { padding: 14px 14px 10px; }
+.role-card-bot { padding: 10px 14px; background: var(--surface-2); }
+.role-card-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.role-card-use  { font-size: 11px; opacity: .75; }
+.role-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; margin-top: 6px; }
+.token-mono { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px; }
+
+.type-scale { display: flex; flex-direction: column; gap: 14px; }
+.type-row { display: flex; align-items: baseline; gap: 16px; padding: 14px; background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 10px; }
+.type-meta { min-width: 120px; flex-shrink: 0; }
+.type-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; display: block; }
+.type-spec  { font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
+.type-preview { color: var(--text-primary); line-height: 1.2; }
+
+.space-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+.space-card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.space-bar { background: var(--bg-accent); border-radius: 3px; height: 8px; }
+.space-val { font-size: 11px; font-weight: 500; color: var(--text-primary); font-family: var(--font-mono); }
+.space-desc { font-size: 10px; color: var(--text-muted); }
+
+.radius-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.radius-card { background: var(--surface-2); border: 0.5px solid var(--border); padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 90px; flex: 1; }
+.radius-box { width: 52px; height: 52px; background: var(--bg-accent); border: 1.5px solid var(--border-accent); }
+
+.shadow-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.shadow-card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 8px; }
+.shadow-box { width: 100%; height: 44px; background: var(--surface-1); border-radius: 8px; }
+
+.divider { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
+
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 0.5px solid; }
+</style>
+
+<div style="padding: 1.5rem 0">
+
+<div class="ds-section">
+  <div class="ds-label">NEXA Workspace · Design System v1.0</div>
+  <div class="ds-title">Fundações Visuais</div>
+  <div class="ds-sub">Tokens de design para o time de Front-End. Todos os valores documentados em hex, rem e px.</div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">01 · Paleta de Cores — Primárias</div>
+
+  <div class="ds-label" style="margin-top:1rem">Navy (Marca)</div>
+  <div class="swatch-row">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#EEF1F8"></div>
+      <div class="swatch-info"><span class="swatch-name">Navy 50</span><span class="swatch-hex">#EEF1F8</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#C5CEE8"></div>
+      <div class="swatch-info"><span class="swatch-name">Navy 200</span><span class="swatch-hex">#C5CEE8</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#7B91CC"></div>
+      <div class="swatch-info"><span class="swatch-name">Navy 400</span><span class="swatch-hex">#7B91CC</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#3D5FA8"></div>
+      <div class="swatch-info"><span class="swatch-name">Navy 600 ★</span><span class="swatch-hex">#3D5FA8</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1E3A7A"></div>
+      <div class="swatch-info"><span class="swatch-name">Navy 800</span><span class="swatch-hex">#1E3A7A</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0D1F4A"></div>
+      <div class="swatch-info"><span class="swatch-name">Navy 950</span><span class="swatch-hex">#0D1F4A</span></div>
+    </div>
+  </div>
+
+  <div class="ds-label" style="margin-top:1.25rem">Cyan (Destaque interativo)</div>
+  <div class="swatch-row">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#E5F8FC"></div>
+      <div class="swatch-info"><span class="swatch-name">Cyan 50</span><span class="swatch-hex">#E5F8FC</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#9AE5F3"></div>
+      <div class="swatch-info"><span class="swatch-name">Cyan 200</span><span class="swatch-hex">#9AE5F3</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#19C4E0"></div>
+      <div class="swatch-info"><span class="swatch-name">Cyan 500 ★</span><span class="swatch-hex">#19C4E0</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0A90A8"></div>
+      <div class="swatch-info"><span class="swatch-name">Cyan 700</span><span class="swatch-hex">#0A90A8</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#065F70"></div>
+      <div class="swatch-info"><span class="swatch-name">Cyan 900</span><span class="swatch-hex">#065F70</span></div>
+    </div>
+  </div>
+
+  <div class="ds-label" style="margin-top:1.25rem">Slate (Neutralos)</div>
+  <div class="swatch-row">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FAFAFA"></div>
+      <div class="swatch-info"><span class="swatch-name">Slate 50</span><span class="swatch-hex">#FAFAFA</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#F0F1F5"></div>
+      <div class="swatch-info"><span class="swatch-name">Slate 100</span><span class="swatch-hex">#F0F1F5</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#D6D9E4"></div>
+      <div class="swatch-info"><span class="swatch-name">Slate 200</span><span class="swatch-hex">#D6D9E4</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#9099B2"></div>
+      <div class="swatch-info"><span class="swatch-name">Slate 400</span><span class="swatch-hex">#9099B2</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#515A77"></div>
+      <div class="swatch-info"><span class="swatch-name">Slate 600</span><span class="swatch-hex">#515A77</span></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1E2440"></div>
+      <div class="swatch-info"><span class="swatch-name">Slate 900</span><span class="swatch-hex">#1E2440</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">02 · Paleta Semântica — Estados do Sistema</div>
+  <div class="role-grid">
+
+    <div class="role-card">
+      <div class="role-card-top" style="background:#EEF1F8">
+        <div class="role-card-name" style="color:#1E3A7A">Primary</div>
+        <div class="role-card-use" style="color:#3D5FA8">Ações principais, CTAs</div>
+        <span class="role-tag" style="background:#3D5FA8;color:#fff">Button · Link</span>
+      </div>
+      <div class="role-card-bot">
+        <span class="token-mono">--color-primary: #3D5FA8</span>
+        <span class="token-mono">--color-primary-hover: #1E3A7A</span>
+        <span class="token-mono">--color-primary-subtle: #EEF1F8</span>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-card-top" style="background:#E5F8FC">
+        <div class="role-card-name" style="color:#065F70">Accent</div>
+        <div class="role-card-use" style="color:#0A90A8">Links, foco, destaque</div>
+        <span class="role-tag" style="background:#19C4E0;color:#0D1F4A">Focus · Active</span>
+      </div>
+      <div class="role-card-bot">
+        <span class="token-mono">--color-accent: #19C4E0</span>
+        <span class="token-mono">--color-accent-hover: #0A90A8</span>
+        <span class="token-mono">--color-accent-subtle: #E5F8FC</span>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-card-top" style="background:#EDFCF2">
+        <div class="role-card-name" style="color:#145E38">Success</div>
+        <div class="role-card-use" style="color:#1A7A49">Confirmações, status ok</div>
+        <span class="role-tag" style="background:#22A05A;color:#fff">Status · Toast</span>
+      </div>
+      <div class="role-card-bot">
+        <span class="token-mono">--color-success: #22A05A</span>
+        <span class="token-mono">--color-success-hover: #145E38</span>
+        <span class="token-mono">--color-success-subtle: #EDFCF2</span>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-card-top" style="background:#FFF8E6">
+        <div class="role-card-name" style="color:#7A5200">Warning</div>
+        <div class="role-card-use" style="color:#9A6800">Avisos, atenção</div>
+        <span class="role-tag" style="background:#E5A000;color:#3D2800">Alert · Badge</span>
+      </div>
+      <div class="role-card-bot">
+        <span class="token-mono">--color-warning: #E5A000</span>
+        <span class="token-mono">--color-warning-hover: #B07A00</span>
+        <span class="token-mono">--color-warning-subtle: #FFF8E6</span>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-card-top" style="background:#FEF0EE">
+        <div class="role-card-name" style="color:#6E1A14">Danger</div>
+        <div class="role-card-use" style="color:#9A2218">Erros, ações destrutivas</div>
+        <span class="role-tag" style="background:#D93020;color:#fff">Error · Delete</span>
+      </div>
+      <div class="role-card-bot">
+        <span class="token-mono">--color-danger: #D93020</span>
+        <span class="token-mono">--color-danger-hover: #A82518</span>
+        <span class="token-mono">--color-danger-subtle: #FEF0EE</span>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-card-top" style="background:#F0F1F5">
+        <div class="role-card-name" style="color:#1E2440">Neutral</div>
+        <div class="role-card-use" style="color:#515A77">Borders, ícones, texto</div>
+        <span class="role-tag" style="background:#515A77;color:#fff">Divider · Icon</span>
+      </div>
+      <div class="role-card-bot">
+        <span class="token-mono">--color-neutral: #515A77</span>
+        <span class="token-mono">--color-border: #D6D9E4</span>
+        <span class="token-mono">--color-border-strong: #9099B2</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">03 · Superfícies — Dark / Light</div>
+  <div class="role-grid">
+    <div class="role-card">
+      <div class="role-card-top" style="background:#FFFFFF;border-bottom:0.5px solid #D6D9E4">
+        <div style="font-size:11px;color:#515A77;font-weight:500">Surface / White</div>
+        <span class="token-mono" style="font-size:10px">#FFFFFF</span>
+      </div>
+      <div class="role-card-bot"><span class="token-mono">--surface-white</span></div>
+    </div>
+    <div class="role-card">
+      <div class="role-card-top" style="background:#FAFAFA;border-bottom:0.5px solid #D6D9E4">
+        <div style="font-size:11px;color:#515A77;font-weight:500">Surface / Base</div>
+        <span class="token-mono" style="font-size:10px">#FAFAFA</span>
+      </div>
+      <div class="role-card-bot"><span class="token-mono">--surface-base</span></div>
+    </div>
+    <div class="role-card">
+      <div class="role-card-top" style="background:#F0F1F5;border-bottom:0.5px solid #D6D9E4">
+        <div style="font-size:11px;color:#515A77;font-weight:500">Surface / Raised</div>
+        <span class="token-mono" style="font-size:10px">#F0F1F5</span>
+      </div>
+      <div class="role-card-bot"><span class="token-mono">--surface-raised</span></div>
+    </div>
+    <div class="role-card">
+      <div class="role-card-top" style="background:#1E2440;border-bottom:0.5px solid #3A4260">
+        <div style="font-size:11px;color:#9099B2;font-weight:500">Dark / Base</div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:#515A77">#1E2440</span>
+      </div>
+      <div class="role-card-bot"><span class="token-mono">--dark-base</span></div>
+    </div>
+    <div class="role-card">
+      <div class="role-card-top" style="background:#252C4A;border-bottom:0.5px solid #3A4260">
+        <div style="font-size:11px;color:#9099B2;font-weight:500">Dark / Raised</div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:#515A77">#252C4A</span>
+      </div>
+      <div class="role-card-bot"><span class="token-mono">--dark-raised</span></div>
+    </div>
+    <div class="role-card">
+      <div class="role-card-top" style="background:#2E3660;border-bottom:0.5px solid #3A4260">
+        <div style="font-size:11px;color:#9099B2;font-weight:500">Dark / Overlay</div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:#515A77">#2E3660</span>
+      </div>
+      <div class="role-card-bot"><span class="token-mono">--dark-overlay</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">04 · Tipografia — Escala de Tamanhos</div>
+  <div class="type-scale">
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">Display</span>
+        <span class="type-spec">48px / 3rem · 600</span>
+      </div>
+      <div class="type-preview" style="font-size:32px;font-weight:600;color:var(--text-primary);line-height:1">Nexa</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">H1 — Page Title</span>
+        <span class="type-spec">32px / 2rem · 600</span>
+      </div>
+      <div class="type-preview" style="font-size:26px;font-weight:600;color:var(--text-primary)">Dashboard</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">H2 — Section</span>
+        <span class="type-spec">24px / 1.5rem · 600</span>
+      </div>
+      <div class="type-preview" style="font-size:22px;font-weight:600;color:var(--text-primary)">Projetos ativos</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">H3 — Card title</span>
+        <span class="type-spec">18px / 1.125rem · 500</span>
+      </div>
+      <div class="type-preview" style="font-size:18px;font-weight:500;color:var(--text-primary)">Sprint em andamento</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">Body Large</span>
+        <span class="type-spec">16px / 1rem · 400 · lh 1.6</span>
+      </div>
+      <div class="type-preview" style="font-size:16px;font-weight:400;color:var(--text-primary);line-height:1.6">Plataforma B2B de gerenciamento de projetos com IA preditiva.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">Body Default</span>
+        <span class="type-spec">14px / 0.875rem · 400 · lh 1.5</span>
+      </div>
+      <div class="type-preview" style="font-size:14px;font-weight:400;color:var(--text-secondary);line-height:1.5">Última atualização há 2 horas · 8 tarefas em aberto</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">Caption / Label</span>
+        <span class="type-spec">12px / 0.75rem · 500</span>
+      </div>
+      <div class="type-preview" style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Status · Em progresso</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-meta">
+        <span class="type-label">Code / Mono</span>
+        <span class="type-spec">13px / 0.8125rem · 400</span>
+      </div>
+      <div class="type-preview" style="font-size:13px;font-weight:400;color:var(--text-accent);font-family:var(--font-mono)">POST /api/auth/register → 201</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:1rem;padding:12px 16px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;">
+    <div class="ds-label" style="margin-bottom:.5rem">Família tipográfica</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div>
+        <span class="token-mono" style="font-size:11px">--font-sans: 'Inter', system-ui, sans-serif</span>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">Interface, formulários, dados</div>
+      </div>
+      <div>
+        <span class="token-mono" style="font-size:11px">--font-mono: 'JetBrains Mono', monospace</span>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">Código, IDs, tokens, rotas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">05 · Espaçamento — Grid de 4px</div>
+  <div class="space-grid">
+    <div class="space-card">
+      <div class="space-bar" style="width:4px"></div>
+      <span class="space-val">4px · 0.25rem</span>
+      <span class="space-desc">--space-1 · xs</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:8px"></div>
+      <span class="space-val">8px · 0.5rem</span>
+      <span class="space-desc">--space-2 · sm</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:12px"></div>
+      <span class="space-val">12px · 0.75rem</span>
+      <span class="space-desc">--space-3</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:16px"></div>
+      <span class="space-val">16px · 1rem</span>
+      <span class="space-desc">--space-4 · md</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:24px"></div>
+      <span class="space-val">24px · 1.5rem</span>
+      <span class="space-desc">--space-6 · lg</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:32px"></div>
+      <span class="space-val">32px · 2rem</span>
+      <span class="space-desc">--space-8 · xl</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:48px"></div>
+      <span class="space-val">48px · 3rem</span>
+      <span class="space-desc">--space-12 · 2xl</span>
+    </div>
+    <div class="space-card">
+      <div class="space-bar" style="width:64px"></div>
+      <span class="space-val">64px · 4rem</span>
+      <span class="space-desc">--space-16 · 3xl</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">06 · Border Radius</div>
+  <div class="radius-row">
+    <div class="radius-card" style="border-radius:8px">
+      <div class="radius-box" style="border-radius:2px"></div>
+      <span class="type-spec">2px · sm</span>
+      <span class="token-mono">--radius-sm</span>
+    </div>
+    <div class="radius-card" style="border-radius:10px">
+      <div class="radius-box" style="border-radius:6px"></div>
+      <span class="type-spec">6px · md</span>
+      <span class="token-mono">--radius-md</span>
+    </div>
+    <div class="radius-card" style="border-radius:10px">
+      <div class="radius-box" style="border-radius:10px"></div>
+      <span class="type-spec">10px · lg</span>
+      <span class="token-mono">--radius-lg</span>
+    </div>
+    <div class="radius-card" style="border-radius:10px">
+      <div class="radius-box" style="border-radius:16px"></div>
+      <span class="type-spec">16px · xl</span>
+      <span class="token-mono">--radius-xl</span>
+    </div>
+    <div class="radius-card" style="border-radius:10px">
+      <div class="radius-box" style="border-radius:999px;width:52px;height:28px"></div>
+      <span class="type-spec">999px · pill</span>
+      <span class="token-mono">--radius-pill</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">07 · Tokens de Texto</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">
+    <div style="padding:12px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px">
+      <div style="font-size:15px;font-weight:500;color:var(--text-primary)">text-primary</div>
+      <span class="token-mono">Slate 900 · #1E2440</span>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Títulos, conteúdo principal</div>
+    </div>
+    <div style="padding:12px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px">
+      <div style="font-size:15px;font-weight:500;color:var(--text-secondary)">text-secondary</div>
+      <span class="token-mono">Slate 600 · #515A77</span>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Labels, subtítulos, metadados</div>
+    </div>
+    <div style="padding:12px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px">
+      <div style="font-size:15px;font-weight:500;color:var(--text-muted)">text-muted</div>
+      <span class="token-mono">Slate 400 · #9099B2</span>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Placeholders, hints, captions</div>
+    </div>
+    <div style="padding:12px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px">
+      <div style="font-size:15px;font-weight:500;color:var(--text-accent)">text-accent</div>
+      <span class="token-mono">Cyan 700 · #0A90A8</span>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Links, estados ativos, foco</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="ds-section">
+  <div class="ds-label">08 · Estados Visuais</div>
+  <div class="chip-row">
+    <span class="chip" style="background:#EEF1F8;color:#1E3A7A;border-color:#C5CEE8">Default</span>
+    <span class="chip" style="background:#E5F8FC;color:#065F70;border-color:#19C4E0">Hover</span>
+    <span class="chip" style="background:#3D5FA8;color:#fff;border-color:#1E3A7A">Active</span>
+    <span class="chip" style="background:#E5F8FC;color:#0A90A8;border-color:#19C4E0;outline:2px solid #19C4E040">Focus</span>
+    <span class="chip" style="background:#F0F1F5;color:#9099B2;border-color:#D6D9E4">Disabled</span>
+    <span class="chip" style="background:#EDFCF2;color:#145E38;border-color:#22A05A">Success</span>
+    <span class="chip" style="background:#FFF8E6;color:#7A5200;border-color:#E5A000">Warning</span>
+    <span class="chip" style="background:#FEF0EE;color:#6E1A14;border-color:#D93020">Error</span>
+  </div>
+</div>
+
+</div>
