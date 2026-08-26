@@ -36,7 +36,7 @@ pool.on('error', (err) => {
  */
 export const query = async (text, params = [], organizationId = null) => {
   const client = await pool.connect();
-  
+
   try {
     // Se fornecer o organizationId, setar variável de sessão para RLS
     if (organizationId) {
@@ -45,7 +45,7 @@ export const query = async (text, params = [], organizationId = null) => {
         [organizationId]
       );
     }
-    
+
     const result = await client.query(text, params);
     return result;
   } finally {
@@ -58,7 +58,7 @@ export const query = async (text, params = [], organizationId = null) => {
  */
 export const transaction = async (callback) => {
   const client = await pool.connect();
-  
+
   try {
     await client.query('BEGIN');
     const result = await callback(client);

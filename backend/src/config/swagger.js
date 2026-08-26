@@ -20,8 +20,8 @@ const openApiDocument = yaml.parse(
 export const swaggerSpec = openApiDocument;
 
 export const swaggerUiOptions = {
-    customSiteTitle: 'NEXA Workspace - API Docs',
-    customCss: `
+  customSiteTitle: 'NEXA Workspace - API Docs',
+  customCss: `
       .swagger-ui .topbar { background-color: #0f172a; }
       .swagger-ui .topbar-wrapper img { content: url(''); }
       .swagger-ui .topbar-wrapper::after {
@@ -31,12 +31,12 @@ export const swaggerUiOptions = {
         font-weight: bold;
       }
     `,
-    swaggerOptions: {
-        persistAuthorization: true,     // Mantém o token após reload
-        displayRequestDuration: true,   // Exibe tempo de resposta
-        filter: true,                   // Barra de busca
-        tryItOutEnabled: true           // Botão "Try it out" já aberto
-    }
+  swaggerOptions: {
+    persistAuthorization: true,     // Mantém o token após reload
+    displayRequestDuration: true,   // Exibe tempo de resposta
+    filter: true,                   // Barra de busca
+    tryItOutEnabled: true           // Botão "Try it out" já aberto
+  }
 };
 
 export { swaggerUi };
