@@ -1,0 +1,208 @@
+/* Page */
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F0F2F8;
+  padding: 24px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Orbs — espelhados do Cadastro, com posições diferentes */
+.orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.3;
+}
+.orb1 {
+  width: 520px;
+  height: 520px;
+  background: #1E3A7A;
+  bottom: -180px;
+  left: -140px;
+}
+.orb2 {
+  width: 380px;
+  height: 380px;
+  background: #19C4E0;
+  top: -100px;
+  right: -60px;
+  opacity: 0.18;
+}
+.orb3 {
+  width: 300px;
+  height: 300px;
+  background: #3D5FA8;
+  top: 40%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  opacity: 0.12;
+}
+
+/* Card — idêntico ao Register para consistência */
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 0.5px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 4px 6px rgba(30, 36, 64, 0.04),
+    0 24px 48px rgba(30, 36, 64, 0.10);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header / logo */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: #0D1F4A;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.logo-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E2440;
+  letter-spacing: -0.01em;
+}
+
+/* Heading */
+.heading { margin-bottom: 4px; }
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1E2440;
+  line-height: 1.2;
+}
+.subtitle {
+  font-size: 13px;
+  color: #9099B2;
+  margin-bottom: 24px;
+}
+
+/* Formulário */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Linha lembrar + esqueci */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.forgot-link {
+  font-size: 12px;
+  color: #3D5FA8;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.forgot-link:hover { color: #1E3A7A; }
+
+/* Dica de credenciais de teste */
+.demo-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: #F0F1F5;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.demo-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9099B2;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+.demo-btn {
+  background: none;
+  border: 0.5px solid #D6D9E4;
+  border-radius: 5px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #3D5FA8;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  background: white;
+}
+.demo-btn:hover {
+  background: #EEF1F8;
+  border-color: #7B91CC;
+}
+.demo-sep {
+  font-size: 12px;
+  color: #D6D9E4;
+}
+
+/* Badge de segurança */
+.security-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 8px 12px;
+  background: #EDFCF2;
+  border-radius: 8px;
+  border: 0.5px solid #9FD4B4;
+  color: #145E38;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: #9099B2;
+  margin-top: 20px;
+}
+.link {
+  color: #3D5FA8;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.link:hover { color: #1E3A7A; }
+
+/* Responsivo */
+@media (max-width: 440px) {
+  .card { padding: 28px 20px; border-radius: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb { animation: none !important; }
+}
