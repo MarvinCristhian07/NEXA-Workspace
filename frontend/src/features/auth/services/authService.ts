@@ -64,6 +64,23 @@ const MOCK_USERS = [
     },
 ];
 
+export interface MfaValidatePayload {
+    mfaToken: string;
+    token: string;
+}
+
+export interface MfaValidateResponse {
+    accessToken: string;
+    expiresIn: string;
+    user: {
+        id: string;
+        email: string;
+        role: 'ADMIN' | 'MEMBER' | 'GUEST';
+        mfaEnabled: boolean;
+        organizationId: string;
+    };
+}
+
 export const authService = {
     async register(payload: RegisterPayload): Promise<RegisterResponse> {
         await delay(1800); // Simular latência realista
@@ -120,6 +137,28 @@ export const authService = {
                 role: user.role,
                 mfaEnabled: user.mfaEnabled,
                 organizationId: user.organizationId,
+            },
+        };
+    },
+
+    async validateMfa(payload: MfaValidatePayload): Promise<MfaValidateResponse> {
+        await delay(1200);
+
+        // Código válido para testes: 482910
+        // Qualquer outro → erro
+        if (payload.token !== '482910') {
+            throw { code: 'MFA_TOKEN_INVALID', message: 'Código inválido ou expirado.' };
+        }
+
+        return {
+            accessToken: `access_${crypto.randomUUID()}`,
+            expiresIn: '24h',
+            user: {
+                id: '660e8400-e29b-41d4-a716-446655440001',
+                email: 'admin@acme.com',
+                role: 'ADMIN',
+                mfaEnabled: true,
+                organizationId: '550e8400-e29b-41d4-a716-446655440000',
             },
         };
     },
